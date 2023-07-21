@@ -59,7 +59,7 @@ namespace li {
       m_li = nullptr;
    }
 
-   void LibInput::waitEvents() {
+   void LibInput::startWaitEvents() {
       pollfd fds {
          .fd = libinput_get_fd(m_li),
          .events = POLLIN,
@@ -68,7 +68,11 @@ namespace li {
 
       do {
          nextEvent();
-      } while(poll(&fds, 1, -1) > -1);
+      } while(!m_stop && poll(&fds, 1, -1) > -1);
+   }
+
+   void LibInput::stopWaitEvents() {
+      m_stop = true;
    }
 
    void LibInput::nextEvent() {

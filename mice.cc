@@ -50,8 +50,12 @@ Mice::Mice(input_t&& input) :
    m_input->onMotion = [this] (li::MotionEvent ev) {this->onEvent(ev);};
 }
 
-void Mice::waitEvents() {
-   m_input->waitEvents();
+void Mice::startEventHandling() {
+   m_input->startWaitEvents();
+}
+
+void Mice::stopEventHandling() {
+   m_input->stopWaitEvents();
 }
 
 void Mice::onEvent(li::MotionEvent ev) {

@@ -32,7 +32,8 @@ namespace li {
    public:
       ~LibInput();
 
-      void waitEvents();
+      void startWaitEvents();
+      void stopWaitEvents();
       std::function<void(MotionEvent)> onMotion;
 
       bool addDeviceFromPath(const std::string& path);
@@ -47,5 +48,6 @@ namespace li {
       void handleDefaultEvent(libinput_event* li_ev, Event& ev);
 
       libinput* m_li;
+      bool m_stop = false;
    };
 } // namespace li

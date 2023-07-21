@@ -14,7 +14,8 @@ public:
    typedef std::shared_ptr<li::LibInput> input_t;
    typedef std::unordered_map<std::string, Mouse> map_t;
 
-   void waitEvents();
+   void startEventHandling();
+   void stopEventHandling();
 
    // sysname - properties of mouse
    const map_t& miceMap() const {return m_mice;}
