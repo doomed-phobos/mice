@@ -47,7 +47,7 @@ namespace li {
 
       device = libinput_path_add_device(m_li, path.c_str());
       if(!device) {
-         fprintf(stderr, "Failed to open '%s':%s\n", path.c_str(), strerror(errno));
+         fprintf(stderr, "Failed to open '%s': %s\n", path.c_str(), strerror(errno));
          return false;
       }
 
