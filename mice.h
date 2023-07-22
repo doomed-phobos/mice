@@ -11,7 +11,7 @@ public:
          button{li::PointerButtonEvent::kNone_Button},
          button_state{li::PointerButtonEvent::kNone_State} {}
 
-      double x, y;
+      float x, y;
       li::PointerButtonEvent::Button button;
       li::PointerButtonEvent::State button_state;
    };
