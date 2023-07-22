@@ -12,6 +12,7 @@ public:
          button{li::PointerButtonEvent::kNone_Button},
          button_state{li::PointerButtonEvent::kNone_State} {}
 
+      const char* sysname;
       double rel_x, rel_y;
       double rel_ux, rel_uy;
       li::PointerButtonEvent::Button button;
@@ -23,6 +24,8 @@ public:
 
    void startEventHandling();
    void stopEventHandling();
+
+   std::function<void(const Mouse&)> onEvent;
 
    // sysname - properties of mouse
    const map_t& miceMap() const {return m_mice;}

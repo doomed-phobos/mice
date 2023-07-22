@@ -3,6 +3,7 @@
 #include <cstring>
 
 #define DEVICES_PATH "/proc/bus/input/devices"
+#define safe_call(ev, args) if(ev) ev(args)
 
 namespace {
    struct FILEDeleter {
@@ -60,13 +61,22 @@ void Mice::stopEventHandling() {
 }
 
 void Mice::onPointerMotionEvent(li::PointerMotionEvent ev) {
-   m_mice[ev.sysname].rel_x = ev.x;
-   m_mice[ev.sysname].rel_y = ev.y;
-   m_mice[ev.sysname].rel_ux = ev.ux;
-   m_mice[ev.sysname].rel_uy = ev.ux;
+   Mouse& mouse = m_mice[ev.sysname];
+   
+   mouse.sysname = ev.sysname;
+   mouse.rel_x = ev.x;
+   mouse.rel_y = ev.y;
+   mouse.rel_ux = ev.ux;
+   mouse.rel_uy = ev.ux;
+
+   safe_call(onEvent, mouse);
 }
 
 void Mice::onPointerButtonEvent(li::PointerButtonEvent ev) {
+   Mouse& mouse = m_mice[ev.sysname];
    m_mice[ev.sysname].button = ev.button;
    m_mice[ev.sysname].button_state = ev.state;
+   mouse.sysname = ev.sysname;
+
+   safe_call(onEvent, mouse);
 }
