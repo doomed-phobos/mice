@@ -66,7 +66,8 @@ namespace li {
          .events = POLLIN,
          .revents = 0,
       };
-
+      
+      m_stop = false;
       do {
          nextEvent();
       } while(!m_stop && poll(&fds, 1, -1) > -1);
