@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <poll.h>
 #include <libinput.h>
+#include <linux/input.h>
 
 #define safe_call(ev, args) if(ev) ev(args)
 
@@ -90,23 +91,37 @@ namespace li {
       switch(libinput_event_get_type(ev)) {
          case LIBINPUT_EVENT_POINTER_MOTION: {
             auto p = libinput_event_get_pointer_event(ev);
-            MotionEvent mev {
-               .x = libinput_event_pointer_get_dx(p),
-               .y = libinput_event_pointer_get_dy(p),
-               .ux = libinput_event_pointer_get_dx_unaccelerated(p),
-               .uy = libinput_event_pointer_get_dy_unaccelerated(p),
-            };
-
+            PointerMotionEvent mev;
             handleDefaultEvent(ev, mev);
+            
+            mev.x = libinput_event_pointer_get_dx(p);
+            mev.y = libinput_event_pointer_get_dy(p);
+            mev.ux = libinput_event_pointer_get_dx_unaccelerated(p);
+            mev.uy = libinput_event_pointer_get_dy_unaccelerated(p);
 
-            safe_call(onMotion, mev);
+            safe_call(onPointerMotion, mev);
+         }
+         break;
+         case LIBINPUT_EVENT_POINTER_BUTTON: {
+            auto p = libinput_event_get_pointer_event(ev);
+            PointerButtonEvent bev;
+            handleDefaultEvent(ev, bev);
+
+            uint32_t button = libinput_event_pointer_get_button(p);
+            bev.button = (button == BTN_LEFT ? PointerButtonEvent::kLeft_Button : 
+                          button == BTN_MIDDLE ? PointerButtonEvent::kMiddle_Button :
+                          button == BTN_RIGHT ? PointerButtonEvent::kRight_Button :
+                          PointerButtonEvent::kUnknown_Button);
+            bev.state = (libinput_event_pointer_get_button_state(p) == LIBINPUT_BUTTON_STATE_PRESSED ?
+                         PointerButtonEvent::kPressed_State : PointerButtonEvent::kReleased_State);
+            safe_call(onPointerButton, bev);    
          }
          break;
       }   
    }
 
-void LibInput::handleDefaultEvent(libinput_event* li_ev, Event& ev) {
-   auto device = libinput_event_get_device(li_ev);
-   ev.sysname = libinput_device_get_sysname(device);
-}
+   void LibInput::handleDefaultEvent(libinput_event* li_ev, Event& ev) {
+      auto device = libinput_event_get_device(li_ev);
+      ev.sysname = libinput_device_get_sysname(device);
+   }
 } // namespace li

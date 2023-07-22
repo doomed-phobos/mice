@@ -23,9 +23,25 @@ namespace li {
       const char* sysname;
    };
 
-   struct MotionEvent : Event {
+   struct PointerMotionEvent : Event {
       double x, y;   // Normal
       double ux, uy; // Unaccelerated
+   };
+
+   struct PointerButtonEvent : Event {
+      enum Button {
+         kNone_Button,
+         kLeft_Button,
+         kMiddle_Button,
+         kRight_Button,
+         kUnknown_Button,
+      } button = kNone_Button;
+
+      enum State {
+         kNone_State,
+         kPressed_State,
+         kReleased_State,
+      } state = kNone_State;
    };
 
    class LibInput {
@@ -34,7 +50,8 @@ namespace li {
 
       void startWaitEvents();
       void stopWaitEvents();
-      std::function<void(MotionEvent)> onMotion;
+      std::function<void(PointerMotionEvent)> onPointerMotion;
+      std::function<void(PointerButtonEvent)> onPointerButton;
 
       bool addDeviceFromPath(const std::string& path);
 

@@ -47,7 +47,8 @@ std::shared_ptr<Mice> Mice::MakeFromSystem() {
 
 Mice::Mice(input_t&& input) :
    m_input{input} {
-   m_input->onMotion = [this] (li::MotionEvent ev) {this->onEvent(ev);};
+   m_input->onPointerMotion = [this] (auto ev) {this->onPointerMotionEvent(ev);};
+   m_input->onPointerButton = [this] (auto ev) {this->onPointerButtonEvent(ev);};
 }
 
 void Mice::startEventHandling() {
@@ -58,7 +59,14 @@ void Mice::stopEventHandling() {
    m_input->stopWaitEvents();
 }
 
-void Mice::onEvent(li::MotionEvent ev) {
-   m_mice[ev.sysname].x += ev.x;
-   m_mice[ev.sysname].y += ev.y;
+void Mice::onPointerMotionEvent(li::PointerMotionEvent ev) {
+   m_mice[ev.sysname].rel_x = ev.x;
+   m_mice[ev.sysname].rel_y = ev.y;
+   m_mice[ev.sysname].rel_ux = ev.ux;
+   m_mice[ev.sysname].rel_uy = ev.ux;
+}
+
+void Mice::onPointerButtonEvent(li::PointerButtonEvent ev) {
+   m_mice[ev.sysname].button = ev.button;
+   m_mice[ev.sysname].button_state = ev.state;
 }

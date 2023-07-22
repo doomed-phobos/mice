@@ -7,8 +7,15 @@ class Mice {
 public:
    struct Mouse {
       Mouse() :
-         x{0}, y{0} {}
-      double x, y;
+         rel_x{0}, rel_y{0},
+         rel_ux{0}, rel_uy{0},
+         button{li::PointerButtonEvent::kNone_Button},
+         button_state{li::PointerButtonEvent::kNone_State} {}
+
+      double rel_x, rel_y;
+      double rel_ux, rel_uy;
+      li::PointerButtonEvent::Button button;
+      li::PointerButtonEvent::State button_state;
    };
 
    typedef std::shared_ptr<li::LibInput> input_t;
@@ -24,7 +31,8 @@ public:
 private:
    Mice(input_t&& input);
 
-   void onEvent(li::MotionEvent ev);
+   void onPointerMotionEvent(li::PointerMotionEvent ev);
+   void onPointerButtonEvent(li::PointerButtonEvent ev);
 
    map_t m_mice;
    input_t m_input;
