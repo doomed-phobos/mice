@@ -7,14 +7,11 @@ class Mice {
 public:
    struct Mouse {
       Mouse() :
-         rel_x{0}, rel_y{0},
-         rel_ux{0}, rel_uy{0},
+         x{0}, y{0},
          button{li::PointerButtonEvent::kNone_Button},
          button_state{li::PointerButtonEvent::kNone_State} {}
 
-      const char* sysname;
-      double rel_x, rel_y;
-      double rel_ux, rel_uy;
+      double x, y;
       li::PointerButtonEvent::Button button;
       li::PointerButtonEvent::State button_state;
    };
