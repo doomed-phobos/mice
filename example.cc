@@ -7,6 +7,8 @@ auto mice = Mice::MakeFromSystem();
 int main() {
    if(!mice)
       return 1;
+   
+   mice->startEventHandling();
 
    return 0;
 }

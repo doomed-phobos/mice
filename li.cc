@@ -4,9 +4,11 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <poll.h>
-#include <libinput.h>
 #include <linux/input.h>
+#include <libinput.h>
+#include <libudev.h>
 
+#define SEATNAME "seat0"
 #define safe_call(ev, args) if(ev) ev(args)
 
 namespace li {
@@ -28,7 +30,7 @@ namespace li {
       close(fd);
    }
 
-   std::shared_ptr<LibInput> LibInput::Make() {
+   std::shared_ptr<LibInput> LibInput::MakeFromPaths(const std::vector<std::string>& paths) {
       libinput* li;
 
       li = libinput_path_create_context(&LibInterface::GetInterface(), nullptr);
@@ -37,19 +39,49 @@ namespace li {
          return nullptr;
       }
 
-      return std::shared_ptr<LibInput>(new LibInput(li));
+      std::shared_ptr<LibInput> lib(new LibInput(li));
+      for(const auto& path : paths)
+         if(!add_device_from_path(li, path))
+            return nullptr;
+
+      return std::move(lib);
    }
 
-   bool LibInput::addDeviceFromPath(const std::string& path) {
-      if(path.empty())
+   std::shared_ptr<LibInput> LibInput::MakeFromUDev() {
+      libinput* li;
+      udev* uv = udev_new();
+      if(!uv) {
+         perror("Failed to initialize udev");
+         return nullptr;
+      }
+
+      li = libinput_udev_create_context(&LibInterface::GetInterface(), nullptr, uv);
+      if(!li) {
+         perror("Failed to initialize libinput context from udev");
+         return nullptr;
+      }
+
+      std::shared_ptr<LibInput> lib(new LibInput(li));
+      if(libinput_udev_assign_seat(li, SEATNAME)) {
+         perror("Failed to set seat");
+         udev_unref(uv);
+         return nullptr;
+      }
+
+      udev_unref(uv);
+      return std::move(lib);
+   }
+
+   bool LibInput::add_device_from_path(libinput* li, const std::string& path) {
+      if(path.empty() || !li)
          return false;
       
       libinput_device* device;
 
-      device = libinput_path_add_device(m_li, path.c_str());
+      device = libinput_path_add_device(li, path.c_str());
       if(!device) {
-         fprintf(stderr, "Failed to open '%s': %s\n", path.c_str(), strerror(errno));
          return false;
+         fprintf(stderr, "Failed to open '%s': %s\n", path.c_str(), strerror(errno));
       }
 
       return true;
@@ -89,6 +121,27 @@ namespace li {
 
    void LibInput::handleEvents(libinput_event* ev) {
       switch(libinput_event_get_type(ev)) {
+         case LIBINPUT_EVENT_DEVICE_ADDED:
+         case LIBINPUT_EVENT_DEVICE_REMOVED: {
+            libinput_device* dev = libinput_event_get_device(ev);
+            DeviceEvent d_ev;
+            bool hasCapability = false;
+            handleDefaultEvent(ev, d_ev);
+
+            if(libinput_device_has_capability(dev, LIBINPUT_DEVICE_CAP_KEYBOARD))
+               d_ev.type |= DeviceEvent::kKeyboard_Type, hasCapability = true;
+            if(libinput_device_has_capability(dev, LIBINPUT_DEVICE_CAP_POINTER))
+               d_ev.type |= DeviceEvent::kPointer_Type, hasCapability = true;
+            
+            if(!hasCapability)
+               d_ev.type = DeviceEvent::kUnknown_Type;
+
+            if(libinput_event_get_type(ev) == LIBINPUT_EVENT_DEVICE_ADDED)
+               safe_call(onDeviceAdded, d_ev);
+            else
+               safe_call(onDeviceRemoved, d_ev);
+         }
+         break;
          case LIBINPUT_EVENT_POINTER_MOTION: {
             auto p = libinput_event_get_pointer_event(ev);
             PointerMotionEvent mev;

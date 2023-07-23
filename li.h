@@ -44,21 +44,35 @@ namespace li {
       } state = kNone_State;
    };
 
+   struct DeviceEvent : Event {
+      enum Type : int {
+         kUnknown_Type  = -1,
+         kNone_Type     = 0,
+         kPointer_Type  = 1 << 0,
+         kKeyboard_Type = 1 << 1,
+      };
+
+      int type = kNone_Type;
+   };
+
    class LibInput {
    public:
       ~LibInput();
 
       void startWaitEvents();
       void stopWaitEvents();
+      std::function<void(DeviceEvent)> onDeviceAdded;
+      std::function<void(DeviceEvent)> onDeviceRemoved;
       std::function<void(PointerMotionEvent)> onPointerMotion;
       std::function<void(PointerButtonEvent)> onPointerButton;
 
-      bool addDeviceFromPath(const std::string& path);
-
-      static std::shared_ptr<LibInput> Make();
+      static std::shared_ptr<LibInput> MakeFromUDev();
+      static std::shared_ptr<LibInput> MakeFromPaths(const std::vector<std::string>& paths);
    private:
       LibInput(libinput* li) :
          m_li{li} {}
+
+      static bool add_device_from_path(libinput* li, const std::string& path);
 
       void nextEvent();
       void handleEvents(libinput_event* ev);

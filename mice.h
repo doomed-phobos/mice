@@ -19,7 +19,7 @@ public:
    };
 
    typedef std::shared_ptr<li::LibInput> input_t;
-   typedef std::unordered_map<std::string, Mouse> map_t;
+   typedef std::unordered_map<const char*, Mouse> map_t;
 
    void startEventHandling();
    void stopEventHandling();
@@ -31,6 +31,8 @@ public:
 private:
    Mice(input_t&& input);
 
+   void onDeviceAdded(li::DeviceEvent ev);
+   void onDeviceRemoved(li::DeviceEvent ev);
    void onPointerMotionEvent(li::PointerMotionEvent ev);
    void onPointerButtonEvent(li::PointerButtonEvent ev);
 
