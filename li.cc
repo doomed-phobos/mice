@@ -9,7 +9,7 @@
 #include <libudev.h>
 
 #define SEATNAME "seat0"
-#define safe_call(ev, args) if(ev) ev(args)
+#define safe_call(ev, args) do {if(ev) ev(args);} while(0)
 
 namespace li {
    const libinput_interface& LibInterface::GetInterface() {

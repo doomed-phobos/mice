@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#define safe_call(ev, args) if(ev) ev(args)
+#define safe_call(ev, args) do {if(ev) ev(args);} while(0)
 
 std::shared_ptr<Mice> Mice::MakeFromSystem() {
    auto lib = li::LibInput::MakeFromUDev();
