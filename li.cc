@@ -98,7 +98,8 @@ namespace li {
          .events = POLLIN,
          .revents = 0,
       };
-
+      
+      m_stop = false;
       do {
          nextEvent();
       } while(!m_stop && poll(&fds, 1, -1) > -1);
@@ -147,10 +148,10 @@ namespace li {
             PointerMotionEvent mev;
             handleDefaultEvent(ev, mev);
             
-            mev.x = libinput_event_pointer_get_dx(p);
-            mev.y = libinput_event_pointer_get_dy(p);
-            mev.ux = libinput_event_pointer_get_dx_unaccelerated(p);
-            mev.uy = libinput_event_pointer_get_dy_unaccelerated(p);
+            mev.x = static_cast<float>(libinput_event_pointer_get_dx(p));
+            mev.y = static_cast<float>(libinput_event_pointer_get_dy(p));
+            mev.ux = static_cast<float>(libinput_event_pointer_get_dx_unaccelerated(p));
+            mev.uy = static_cast<float>(libinput_event_pointer_get_dy_unaccelerated(p));
 
             safe_call(onPointerMotion, mev);
          }

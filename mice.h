@@ -7,13 +7,11 @@ class Mice {
 public:
    struct Mouse {
       Mouse() :
-         rel_x{0}, rel_y{0},
-         rel_ux{0}, rel_uy{0},
+         x{0}, y{0},
          button{li::PointerButtonEvent::kNone_Button},
          button_state{li::PointerButtonEvent::kNone_State} {}
 
-      double rel_x, rel_y;
-      double rel_ux, rel_uy;
+      float x, y;
       li::PointerButtonEvent::Button button;
       li::PointerButtonEvent::State button_state;
    };
@@ -23,6 +21,8 @@ public:
 
    void startEventHandling();
    void stopEventHandling();
+
+   std::function<void(const Mouse&)> onEvent;
 
    // sysname - properties of mouse
    const map_t& miceMap() const {return m_mice;}

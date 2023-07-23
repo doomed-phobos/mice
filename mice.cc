@@ -39,10 +39,10 @@ void Mice::onPointerMotionEvent(li::PointerMotionEvent ev) {
    if(m_mice.find(ev.sysname) == m_mice.end())
       return;
 
-   m_mice[ev.sysname].rel_x = ev.x;
-   m_mice[ev.sysname].rel_y = ev.y;
-   m_mice[ev.sysname].rel_ux = ev.ux;
-   m_mice[ev.sysname].rel_uy = ev.ux;
+   // m_mice[ev.sysname].rel_x = ev.x;
+   // m_mice[ev.sysname].rel_y = ev.y;
+   // m_mice[ev.sysname].rel_ux = ev.ux;
+   // m_mice[ev.sysname].rel_uy = ev.ux;
 
    printf("%s    (%.2f,%.2f)\n", ev.sysname, ev.x, ev.y);
 }

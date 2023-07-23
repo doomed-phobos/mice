@@ -24,8 +24,8 @@ namespace li {
    };
 
    struct PointerMotionEvent : Event {
-      double x, y;   // Normal
-      double ux, uy; // Unaccelerated
+      float x, y;   // Normal
+      float ux, uy; // Unaccelerated
    };
 
    struct PointerButtonEvent : Event {
