@@ -1,0 +1,8 @@
+set(TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+file(GLOB TEST_FILES "${TEST_DIR}/test_*.cc")
+foreach(test_file ${TEST_FILES})
+  get_filename_component(test_filename ${test_file} NAME_WE)
+  add_executable(${test_filename} ${test_file})
+  target_compile_options(${test_filename} PRIVATE -Wall -Wextra)
+  target_link_libraries(${test_filename} mice-lib)
+endforeach()
