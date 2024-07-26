@@ -47,9 +47,15 @@ namespace li {
     };
 
     m_shouldStop = false;
-    do {
-      nextEvent();
-    } while(!m_shouldStop && poll(&fds, 1, 5000) > 0);
+    // First event
+    nextEvent();
+    while(!m_shouldStop) {
+      if(poll(&fds, 1, 0) > 0)
+        nextEvent();
+    }
+    // do {
+      // nextEvent();
+    // } while(!m_shouldStop && poll(&fds, 1, -1) > 0);
   }
 
   void LibInput::stopWaitEvents() {
