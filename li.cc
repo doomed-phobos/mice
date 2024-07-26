@@ -7,9 +7,12 @@
 #include <poll.h>
 #include <errno.h>
 #include <libinput.h>
-// #include <libudev.h>
+#include <libudev.h>
+#include <linux/input-event-codes.h>
 
 #define SEATNAME "seat0" // TODO: Cambiar esto?
+
+#define safe_call(ev, arg0) do {if(ev) ev(arg0);} while(0)
 
 namespace li {
   const libinput_interface& LibInterface::GetInterface() {
@@ -59,9 +62,6 @@ namespace li {
       processEvent(ev);
     }
   }
-  
-  void LibInput::processEvent(libinput_event* ev) {
-  }
 
   std::unique_ptr<LibInput> LibInput::MakeFromUDev() {
     struct Udev {
@@ -92,7 +92,7 @@ namespace li {
       log << "Failed to set seat";
       return nullptr;
     }
-
+    
     return std::unique_ptr<LibInput>{new LibInput(std::move(li))};
   }
 
@@ -125,8 +125,8 @@ namespace li {
     return true;
   }
 #endif
-/*
-  void LibInput::handleEvents(libinput_event* ev) {
+
+  void LibInput::processEvent(libinput_event* ev) {
     switch(libinput_event_get_type(ev)) {
         case LIBINPUT_EVENT_DEVICE_ADDED:
         case LIBINPUT_EVENT_DEVICE_REMOVED: {
@@ -183,5 +183,5 @@ namespace li {
   void LibInput::handleDefaultEvent(libinput_event* li_ev, Event& ev) {
     auto device = libinput_event_get_device(li_ev);
     ev.sysname = libinput_device_get_sysname(device);
-  }*/
+  }
 } // namespace li

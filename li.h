@@ -5,7 +5,7 @@
 #include <memory>
 #include <iosfwd>
 // #include <vector>
-// #include <functional>
+#include <functional>
 
 struct libinput;
 struct libinput_event;
@@ -20,8 +20,8 @@ namespace li {
     static void close_restricted(int fd, void* user_data);
   };
 
-  /*struct Event {
-    const char* sysname;
+  struct Event {
+    std::string sysname;
   };
 
   struct PointerMotionEvent : Event {
@@ -54,17 +54,17 @@ namespace li {
     };
 
     int type = kNone_Type;
-  };*/
+  };
   class LibInput {
   public:
     ~LibInput() {}
 
     void startWaitEvents();
     void stopWaitEvents();
-    // std::function<void(DeviceEvent)> onDeviceAdded;
-    // std::function<void(DeviceEvent)> onDeviceRemoved;
-    // std::function<void(PointerMotionEvent)> onPointerMotion;
-    // std::function<void(PointerButtonEvent)> onPointerButton;
+    std::function<void(DeviceEvent)> onDeviceAdded;
+    std::function<void(DeviceEvent)> onDeviceRemoved;
+    std::function<void(PointerMotionEvent)> onPointerMotion;
+    std::function<void(PointerButtonEvent)> onPointerButton;
 
     static std::unique_ptr<LibInput> MakeFromUDev();
 #if 0
@@ -82,10 +82,9 @@ namespace li {
 #if 0
     static bool add_device_from_path(Ptr& li, const std::string& path);
 #endif
-
     void nextEvent();
     void processEvent(libinput_event* ev);
-    // void handleDefaultEvent(libinput_event* li_ev, Event& ev);
+    void handleDefaultEvent(libinput_event* li_ev, Event& ev);
 
     Ptr m_li;
     bool m_shouldStop; // FIXME: Debería ser atómico?

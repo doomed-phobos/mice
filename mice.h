@@ -2,6 +2,7 @@
 #include "li.h"
 
 #include <unordered_map>
+#include <functional>
 
 class Mice {
 public:
@@ -17,7 +18,7 @@ public:
    };
 
    typedef std::shared_ptr<li::LibInput> input_t;
-   typedef std::unordered_map<const char*, Mouse> map_t;
+   typedef std::unordered_map<std::string_view, Mouse> map_t;
 
    void startEventHandling();
    void stopEventHandling();
