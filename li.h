@@ -4,7 +4,7 @@
 #pragma once
 #include <memory>
 #include <iosfwd>
-// #include <vector>
+#include <atomic>
 #include <functional>
 
 struct libinput;
@@ -87,6 +87,6 @@ namespace li {
     void handleDefaultEvent(libinput_event* li_ev, Event& ev);
 
     Ptr m_li;
-    bool m_shouldStop; // FIXME: Debería ser atómico?
+    std::atomic_bool m_shouldStop; // FIXME: Debería ser atómico?
   };
 } // namespace li
